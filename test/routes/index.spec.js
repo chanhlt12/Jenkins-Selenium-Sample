@@ -41,13 +41,13 @@ describe("home page", function () {
         .equal(3, "table should have 3 columns");
       chai
         .expect($("thead tr th:nth-child(1)").text())
-        .equal("#", "1st column header is #");
+        .equal("#", "1st column header should be '#'");
       chai
         .expect($("thead tr th:nth-child(2)").text())
-        .equal("Name", "2nd column header is Name");
+        .equal("Name", "2nd column header should be 'Name'");
       chai
         .expect($("thead tr th:nth-child(3)").text())
-        .equal("Age", "3rd column header is Age");
+        .equal("Age", "3rd column header should be 'Age'");
     });
   });
 });

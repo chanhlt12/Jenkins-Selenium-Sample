@@ -1,6 +1,9 @@
 /* groovylint-disable CompileStatic, DuplicateStringLiteral, NoDef, UnnecessaryGString, VariableTypeRequired */
 
 pipeline {
+    options {
+        disableConcurrentBuilds()
+    }
     agent any
     stages {
         stage('Build') {
