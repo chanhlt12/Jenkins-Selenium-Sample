@@ -1,4 +1,4 @@
-FROM test-env
+FROM ubuntu
 
 RUN apt-get update -y
 RUN apt-get install -y libappindicator1 fonts-liberation wget curl gnupg2
