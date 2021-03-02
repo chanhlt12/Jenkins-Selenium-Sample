@@ -1,0 +1,44 @@
+/* groovylint-disable CompileStatic, DuplicateStringLiteral, NoDef, UnnecessaryGString, VariableTypeRequired */
+
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                script {
+                    def branchName = "${env.BRANCH_NAME}".toLowerCase().replaceAll("/", "_")
+
+                    def dockerNet = "${branchName}-net"
+                    def appImage = "${branchName}-app"
+                    def testImage = "${branchName}-test"
+
+                    sh "docker ps -a --filter name=${branchName} -q | xargs docker stop || true"
+                    sh "docker ps -a --filter name=${branchName} -q | xargs docker rm || true"
+                    sh "docker images --filter=reference='*${branchName}*:*' -q | xargs docker rmi || true"
+                    sh "docker network ls --filter=name=${branchName}-* -q | xargs docker network rm || true"
+
+                    sh "docker network create --driver bridge ${dockerNet}"
+
+                    sh "docker build -t ${appImage} -f Dockerfile ."
+
+                    sh "docker build -t ${testImage} -f Test.Dockerfile ."
+                }
+            }
+        }
+        stage('Test') {
+            steps {
+                script {
+                    def branchName = "${env.BRANCH_NAME}".toLowerCase().replaceAll("/", "_")
+
+                    def dockerNet = "${branchName}-net"
+                    def appImage = "${branchName}-app"
+                    def testImage = "${branchName}-test"
+
+                    sh "docker run -d --name ${appImage} --net ${dockerNet} ${appImage}"
+
+                    sh "docker run --name ${testImage} --link ${appImage}:test-server --net ${dockerNet} ${testImage}"
+                }
+            }
+        }
+    }
+}

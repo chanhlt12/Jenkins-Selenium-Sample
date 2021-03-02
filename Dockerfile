@@ -1,0 +1,9 @@
+FROM node:lts-alpine3.12
+
+COPY . .
+
+RUN npm install
+
+EXPOSE 3000
+
+CMD ["npm", "start"]

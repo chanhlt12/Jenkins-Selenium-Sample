@@ -7,14 +7,18 @@ const { JSDOM } = jsdom;
 var driver;
 var dom;
 var $;
-describe("localhost:3000", function () {
+describe("home page", function () {
   before(async function () {
-    const options = new chrome.Options().headless();
+    const options = new chrome.Options()
+      .headless()
+      .addArguments("--headless")
+      .addArguments("--no-sandbox")
+      .addArguments("--disable-dev-shm-usage");
     driver = await new Builder()
       .forBrowser("chrome")
       .setChromeOptions(options)
       .build();
-    await driver.get("http://localhost:3000");
+    await driver.get("http://test-server:3000");
     const source = await driver.getPageSource();
     dom = new JSDOM(source);
     $ = require("jquery")(dom.window);
