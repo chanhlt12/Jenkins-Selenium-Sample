@@ -10,7 +10,6 @@ pipeline {
 
                     def dockerNet = "${branchName}-net"
                     def appImage = "${branchName}-app"
-                    def testEnvImage = "${branchName}-test-env"
                     def testImage = "${branchName}-test"
 
                     sh "docker ps -a --filter name=${branchName} -q | xargs docker stop || true"
@@ -22,7 +21,7 @@ pipeline {
 
                     sh "docker build -t ${appImage} -f Dockerfile ."
 
-                    sh "docker build -t ${testEnvImage} -f Test-env.Dockerfile ."
+                    sh "docker build -t test-env -f Test-env.Dockerfile ."
 
                     sh "docker build -t ${testImage} -f Test.Dockerfile ."
                 }
