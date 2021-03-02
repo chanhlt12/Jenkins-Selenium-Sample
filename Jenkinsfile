@@ -1,4 +1,4 @@
-/* groovylint-disable CompileStatic, DuplicateStringLiteral, NoDef, UnnecessaryGString, VariableTypeRequired */
+/* groovylint-disable CompileStatic, DuplicateStringLiteral, LineLength, NoDef, UnnecessaryGString, VariableTypeRequired */
 
 pipeline {
     options {
@@ -8,6 +8,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
+                slackSend (color: 'warning', message: "START: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})", channel: "#jenkins")
                 script {
                     def branchName = "${env.BRANCH_NAME}".toLowerCase().replaceAll("/", "_")
 
@@ -44,6 +45,20 @@ pipeline {
                     sh "docker run --name ${testImage} --link ${appImage}:test-server --net ${dockerNet} ${testImage}"
                 }
             }
+        }
+    }
+
+    post {
+        success {
+            slackSend (color: 'good', message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})", channel: "#jenkins")
+        }
+
+        failure {
+            slackSend (color: 'danger', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})", channel: "#jenkins")
+        }
+
+        always {
+            cleanWs()
         }
     }
 }
