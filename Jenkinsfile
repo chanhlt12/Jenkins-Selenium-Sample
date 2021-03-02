@@ -1,4 +1,4 @@
-/* groovylint-disable CompileStatic, DuplicateStringLiteral, LineLength, NoDef, UnnecessaryGString, VariableTypeRequired */
+/* groovylint-disable CompileStatic, DuplicateStringLiteral, LineLength, NoDef, UnnecessaryGString, UnusedVariable, VariableTypeRequired */
 
 pipeline {
     options {
@@ -58,6 +58,18 @@ pipeline {
         }
 
         always {
+            script {
+                def branchName = "${env.BRANCH_NAME}".toLowerCase().replaceAll("/", "_")
+
+                def dockerNet = "${branchName}-net"
+                def appImage = "${branchName}-app"
+                def testImage = "${branchName}-test"
+
+                sh "docker ps -a --filter name=${branchName} -q | xargs docker stop || true"
+                sh "docker ps -a --filter name=${branchName} -q | xargs docker rm || true"
+                sh "docker images --filter=reference='*${branchName}*:*' -q | xargs docker rmi || true"
+                sh "docker network ls --filter=name=${branchName}-* -q | xargs docker network rm || true"
+            }
             cleanWs()
         }
     }
